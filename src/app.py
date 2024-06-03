@@ -1,5 +1,7 @@
 import pygame
 from screen_manager import ScreenManager
+from download_screen import DownloadScreen
+from player_screen import PlayerScreen
 
 class App:
     def __init__(self):
@@ -8,14 +10,14 @@ class App:
         self.width, self.height = self.size = (800, 600)
 
         self.screen = pygame.display.set_mode(self.size)
-        pygame.display.set_caption("My Game")
+        pygame.display.set_caption("Music Player")
 
-        self.game_state_manager = ScreenManager(self)
+        self.screen_manager = ScreenManager(self)
 
-        self.game_state_manager.add(MenuState("menu", self))
-        self.game_state_manager.add(PlayingState("game", self))
+        self.screen_manager.add(DownloadScreen("downloader", self))
+        self.screen_manager.add(PlayerScreen("player", self))
 
-        self.game_state_manager.set_state("menu")
+        self.screen_manager.set_state("downloader")
 
         self.fps = 60
 
@@ -38,14 +40,13 @@ class App:
             if event.type == pygame.QUIT:
                 self.running = False
 
-            self.game_state_manager.handle_events(event)
+            self.screen_manager.handle_events(event)
 
     def update(self):
-        self.game_state_manager.update()
-        pass
+        self.screen_manager.update()
 
     def draw(self):
         self.screen.fill("white")
 
-        self.game_state_manager.draw()
+        self.screen_manager.draw()
         pygame.display.flip()
