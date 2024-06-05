@@ -25,7 +25,7 @@ def pause(channel: pygame.mixer.Channel) -> None:
 if __name__ == "__main__":
     pygame.init()
     #download_video(r"C:\Users\\garbage\music_player\songs", "e", "https://www.youtube.com/watch?v=OKoSjxy0G2I")
-    audio = pygame.mixer.Sound(r"C:\Users\aisha\garbage\music_player\songs\e.mp3")
+    audio = pygame.mixer.Sound(r"C:\Users\\garbage\music_player\songs\e.mp3")
     channel = pygame.mixer.Channel(0)
     play(channel, audio)
     input()
