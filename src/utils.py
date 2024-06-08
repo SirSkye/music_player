@@ -24,8 +24,10 @@ def pause(channel: pygame.mixer.Channel) -> None:
     
 if __name__ == "__main__":
     pygame.init()
-    #download_video(r"C:\Users\\garbage\music_player\songs", "e", "https://www.youtube.com/watch?v=OKoSjxy0G2I")
-    audio = pygame.mixer.Sound(r"C:\Users\\garbage\music_player\songs\e.mp3")
+    #download_video(r"C:\Users\aisha\garbage\music_player\music", "e", "https://www.youtube.com/watch?v=UTpacsL85jI")
+    audio = pygame.mixer.Sound(r"C:\Users\aisha\garbage\music_player\music\e.mp3")
+    pygame.math.veccotyoue
     channel = pygame.mixer.Channel(0)
     play(channel, audio)
     input()
+    what is happening( lol there's a space in between the parantahees. That's so funny )
