@@ -10,19 +10,39 @@ class App(tk.Tk):
         self.geometry(f"600x700")
         self.resizable(False, False)
 
+        self.player = Player(r"C:\Users\aisha\garbage\music_player-1\music")
+
         s = ttk.Style()
         s.configure("first.TFrame", background = "blue")
         s.configure("second.TFrame", background = "red")
         s.configure("noFocus.TButton", relief="flat", background="SystemButtonFace", borderwidth=0)
-        frame1 = ttk.Frame(self, height=600, width=600, style="first.TFrame")
-        frame1.pack()
+        self.container = ttk.Frame(self, height=600, width=600, style="first.TFrame")
+        self.container.pack_propagate(False)
+        self.container.pack()
 
-        self.frame = PlayerFrame(self, assets_dir)
+        self.player = PlayerFrame(self, assets_dir, self.player)
+        self.tab_menu = TabMenu(self.container, self.player)
 
+class TabMenu(ttk.Notebook):
+    def __init__(self, parent, player: Player) -> None:
+        ttk.Notebook.__init__(self, parent, height=600, width=600)
+        self.pack()
+        self.download_frame = DownloadFrame(self)
+        self.playlist_frame = PlaylistFrame(self, player)
+        self.add(self.playlist_frame, text="Playlists")
+        self.add(self.download_frame, text="Download")
 
+class DownloadFrame(ttk.Frame):
+    def __init__(self, parent) -> None:
+        ttk.Frame.__init__(self, parent, style="first.TFrame")
+
+class PlaylistFrame(ttk.Frame):
+    def __init__(self, parent, player: Player) -> None:
+        self.player = player
+        ttk.Frame.__init__(self, parent, style="first.TFrame")
 class PlayerFrame(ttk.Frame):
-    def __init__(self, parent, assets_dir:str):
-        self.player = Player(r"C:\Users\aisha\garbage\music_player-1\music")
+    def __init__(self, parent, assets_dir:str, player:Player):
+        self.player = player
         ttk.Frame.__init__(self, parent, height=100, width=600, style="second.TFrame")
         self.pack(fill = "both", expand=True)
         self.columnconfigure([x for x in range(20)], weight=1, uniform="a")
