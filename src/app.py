@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from utils import open_img
-from player import Player
+from player import Player, Data
 
 class App(tk.Tk):
     def __init__(self, assets_dir: str):
@@ -11,6 +11,7 @@ class App(tk.Tk):
         self.resizable(False, False)
 
         self.player = Player(r"C:\Users\aisha\garbage\music_player-1\music")
+        self.data = Data(r"C:\Users\aisha\garbage\music_player-1\music")
 
         s = ttk.Style()
         s.configure("first.TFrame", background = "blue")
@@ -21,25 +22,84 @@ class App(tk.Tk):
         self.container.pack()
 
         self.player = PlayerFrame(self, assets_dir, self.player)
-        self.tab_menu = TabMenu(self.container, self.player)
+        self.tab_menu = TabMenu(self.container, self.data)
 
 class TabMenu(ttk.Notebook):
-    def __init__(self, parent, player: Player) -> None:
+    def __init__(self, parent, data: Data) -> None:
         ttk.Notebook.__init__(self, parent, height=600, width=600)
         self.pack()
         self.download_frame = DownloadFrame(self)
-        self.playlist_frame = PlaylistFrame(self, player)
+        self.playlist_frame = PlaylistFrame(self, data)
+        self.add_playlist_frame = AddPlaylistFrame(self, data)
+
         self.add(self.playlist_frame, text="Playlists")
+        self.add(self.add_playlist_frame, text="Add Playlist")
         self.add(self.download_frame, text="Download")
 
 class DownloadFrame(ttk.Frame):
     def __init__(self, parent) -> None:
         ttk.Frame.__init__(self, parent, style="first.TFrame")
+        self.columnconfigure([x for x in range(7)], weight=1, uniform="a")
+        self.rowconfigure([x for x in range(30)], weight=1, uniform="b")
+
+        ttk.Label(self, text="Link: ").grid(column=0, row=0, sticky="nsew")
+        self.link_entry = ttk.Entry(self)
+        self.link_entry.grid(column=1, row=0, columnspan=6, sticky="nsew")
+
+        ttk.Label(self, text="Song Name: ").grid(column=0, row=1, sticky="nesw")
+        self.song_name_entry = ttk.Entry(self)
+        self.song_name_entry.grid(column=1, row=1, columnspan=6, sticky="nsew")
+
+        ttk.Label(self, text="Artist Name: ").grid(column=0, row=2, sticky="nesw")
+        self.artist_name_entry = ttk.Entry(self)
+        self.artist_name_entry.grid(column=1, row=2, columnspan=6, sticky="nsew")
+
+        ttk.Label(self, text="Playlists to add to: ").grid(column=0, columnspan=7, row=4)
+        self.playlists_frame_container = ttk.Frame(self, style="first.TFrame")
+        self.playlists_frame_container.grid(column=0, row=5, rowspan=22, columnspan=7, sticky="nsew")
+        self.playlists_frame = ScollDownloadPlaylists(self.playlists_frame_container, ["wow"], 12)
+
+class ScollDownloadPlaylists(ttk.Frame):
+    def __init__(self, parent, playlists: list, height: int) -> None:
+        ttk.Frame.__init__(self, parent)
+        self.pack(fill="both", expand=True)
+        
+        self.playlists = playlists
+        self.playlist_num = len(playlists)
+        self.playlist_height = height * self.playlist_num
+
+        self.canvas = tk.Canvas(self, background="red", scrollregion=(0, 0, 600, self.playlist_height))
+        self.canvas.pack(expand=True, fill="both")
+
+        self.check_boxes = list()
+        self.view_frame = ttk.Frame(self)
+        for index, playlist in enumerate(self.playlists):
+            self.check_boxes.append(tk.Checkbutton(self.view_frame, text=playlist, height=height))
+            self.check_boxes[index].pack(expand = True, fill = "both")
+
+        self.canvas.create_window((0, 0), window = self.view_frame, anchor="nw", height=self.playlist_height)
+
+        if self.winfo_height() > self.playlist_height:
+            print(self.winfo_height(), self.playlist_height)
+            self.canvas.bind_all("<MouseWheel>", lambda event: self.canvas.yview_scroll(-int(event.delta/60),"units"))
 
 class PlaylistFrame(ttk.Frame):
+    def __init__(self, parent, data: Player) -> None:
+        self.data = data
+        ttk.Frame.__init__(self, parent, style="first.TFrame")
+
+class AddPlaylistFrame(ttk.Frame):
     def __init__(self, parent, player: Player) -> None:
         self.player = player
         ttk.Frame.__init__(self, parent, style="first.TFrame")
+        self.columnconfigure([x for x in range(7)], weight=1, uniform="a")
+        self.rowconfigure([x for x in range(30)], weight=1, uniform="b")
+
+        ttk.Label(self, text="Link: ").grid(column=0, row=0, sticky="nsew")
+        self.link_entry = ttk.Entry(self)
+        self.link_entry.grid(column=1, row=0, columnspan=6, sticky="nsew")
+        
+        
 class PlayerFrame(ttk.Frame):
     def __init__(self, parent, assets_dir:str, player:Player):
         self.player = player
