@@ -24,6 +24,11 @@ class Data:
     
     def get_artist(self, song: str) -> str:
         return self.artists[song]
+    
+    def check_playlist_exist(self, song: str) -> bool:
+        if song in self.playlists:
+            return True
+        return False
 
 class Player:
     def __init__(self, directory:str, channel_id:int = 0) -> None:
