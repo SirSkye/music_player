@@ -95,3 +95,12 @@ class Song:
     def updt_time(self) -> None:
         self.time += time.time() - self.start_time
         self.start_time = time.time()
+
+{
+    "Playlists" : {
+
+    },
+    "Artists" : {
+        "Best of You" : "Andy Grammer"
+    }
+}
