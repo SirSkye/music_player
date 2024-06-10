@@ -89,15 +89,31 @@ class PlaylistFrame(ttk.Frame):
         ttk.Frame.__init__(self, parent, style="first.TFrame")
 
 class AddPlaylistFrame(ttk.Frame):
-    def __init__(self, parent, player: Player) -> None:
-        self.player = player
+    def __init__(self, parent, data: Data) -> None:
+        self.data = data
         ttk.Frame.__init__(self, parent, style="first.TFrame")
         self.columnconfigure([x for x in range(7)], weight=1, uniform="a")
         self.rowconfigure([x for x in range(30)], weight=1, uniform="b")
 
-        ttk.Label(self, text="Link: ").grid(column=0, row=0, sticky="nsew")
-        self.link_entry = ttk.Entry(self)
-        self.link_entry.grid(column=1, row=0, columnspan=6, sticky="nsew")
+        ttk.Label(self, text="Name: ").grid(column=0, row=0, sticky="nsew")
+        self.name_entry = ttk.Entry(self)
+        self.name_entry.grid(column=1, row=0, columnspan=6, sticky="nsew")
+
+        ttk.Button(self, text = "Submit", command=self.submit_button).grid(column=0, columnspan=7, row=15)
+        ttk.Button(self, text="New Entry").grid(column=0, columnspan=7, row=16)
+
+        self.notice_label = ttk.Label(self, text="")
+        self.notice_label.grid(column=0, columnspan=7, row=17)
+
+    def submit_button(self):
+        name = self.name_entry.get()
+        if self.data.check_playlist_exist(name):
+            self.notice_label["text"] = "Unable to add. Already exists"
+        else:
+            self.data.add_new_playlist(name)
+            self.notice_label["text"] = "Added Playlist"
+        
+            
         
         
 class PlayerFrame(ttk.Frame):
