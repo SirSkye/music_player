@@ -2,12 +2,34 @@ import pygame
 import os
 import time
 import json
+from typing import Dict, Tuple
+
+class Data:
+    def __init__(self, directory: str) -> None:
+        self.directory = directory
+        self.playlists, self.artists = self.load_data()
+
+    def load_data(self) -> Tuple[dict, dict]:
+        data = dict()
+        try:
+            with open(rf"{self.directory}\data.json", "r") as f:
+                data = json.load(f)
+        except:
+            print(rf"ERROR: COULD NOT READ {self.directory}\data.json")
+            exit()
+        return data["Playlists"], data["Artists"]
+    
+    def get_playlists(self) -> list:
+        return self.playlists.keys()
+    
+    def get_artist(self, song: str) -> str:
+        return self.artists[song]
 
 class Player:
     def __init__(self, directory:str, channel_id:int = 0) -> None:
         self.channel = pygame.mixer.Channel(channel_id)
         self.directory = directory
-        
+
         self.data = self.load_data()
 
         self.loaded = list()
