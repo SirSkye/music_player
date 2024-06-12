@@ -1,8 +1,10 @@
 {
     "Playlists" : {
-
+        "Something": ["Best of You"],
+        "e": []
     },
     "Artists" : {
-        "Best of You" : "Andy Grammer"
+        "Best of You" : "Andy Grammer",
+        "My Person" : "Spencer Cardnall"
     }
 }

@@ -1,3 +1,4 @@
 pygame-ce
 pytube
 moviepy
+pillow
