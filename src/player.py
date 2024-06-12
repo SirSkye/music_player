@@ -70,6 +70,15 @@ class Data:
     def get_songs(self) -> list:
         """Gets all songs from the Artists dict, which are the valid songs, accessible by the music player"""
         return list(self.artists.keys())
+    
+    def save(self) -> bool:
+        try:
+            with open(fr"{self.directory}\data.json", "w") as f:
+                data = {"Playlists" : self.playlists, "Artists":self.artists}
+                json.dump(data, f)
+        except:
+            return False
+        return True
 
 data = Data(r"C:\Users\aisha\garbage\music_player-1\music")
 data.check_broken()
@@ -103,6 +112,14 @@ class Player:
             self.play_song()
         else:
             self.current_song = None
+
+    def check_change(self) -> bool:
+        if len(self.data.get_playlist_songs(self.current_playlist)) != 0:
+            self.current_song = Song(fr"{self.directory}\{self.data.get_playlist_songs(self.current_playlist)[self.index]}.mp3", self.data.get_playlist_songs(self.current_playlist)[self.index], self.data.get_artist(self.data.get_playlist_songs(self.current_playlist)[self.index]))
+            self.play_song()
+            return True
+        else:
+            return False
 
     def set_playlist(self, name: str) -> None:
         self.channel.stop()

@@ -217,20 +217,20 @@ class PlayListViewWidget(ttk.Frame):
 
         ttk.Frame.__init__(self, parent, height=50, width=600, style="child_frames.TFrame")
         self.propagate(False)
-        self.columnconfigure((0, 1), weight=1)
-        self.rowconfigure((0, 1), weight=1)
+        self.columnconfigure((0, 1), weight=1, uniform="a")
+        self.rowconfigure((0, 1), weight=1, uniform="b")
 
         label = ttk.Label(self, text=self.playlist_name, anchor="center")
-        label.propagate(False)
+        label.grid_propagate(False)
         label.grid(column=0, row=0, sticky="nesw")
         label = ttk.Label(self, text=fr"Song count: {len(self.playlist_songs)}")
-        label.propagate(False)
+        label.grid_propagate(False)
         label.grid(column=0, row=1)
         button = ttk.Button(self, text="Play", command=self.play_button)
-        button.propagate(False)
+        button.grid_propagate(False)
         button.grid(column=1, row=0, sticky="nesw")
         button = ttk.Button(self, text="Edit", command=self.edit_button)
-        button.propagate(False)
+        button.grid_propagate(False)
         button.grid(column=1, row=1, sticky="nesw")
 
     def edit_button(self) -> None:
@@ -267,7 +267,7 @@ class ScrollViewPlaylist(ttk.Frame):
         except:
             pass
         self.playlist_num = len(self.data.get_playlists())
-        self.playlist_height = self.height * (self.playlist_num - 1)
+        self.playlist_height = self.height * (self.playlist_num)
 
         self.canvas = tk.Canvas(self, background="green", scrollregion=(0, 0, 600, self.playlist_height))
         self.canvas.pack(expand=True, fill="both")
@@ -277,13 +277,14 @@ class ScrollViewPlaylist(ttk.Frame):
 
         self.playlist_widgets = list()
         for index, playlist in enumerate(self.data.get_playlists()):
-            if playlist == "random":
-                continue
             self.playlist_widgets.append(PlayListViewWidget(self.view_frame, playlist, self.data.get_playlist_songs(playlist), self.notebook, self.player))
             self.playlist_widgets[index].pack(fill="both", expand=True)
 
         self.canvas.create_window((0, 0), window = self.view_frame, anchor="nw", height=self.playlist_height)
-    
+
+        if self.winfo_height() < self.playlist_height:
+            self.canvas.bind_all("<MouseWheel>", lambda event: self.canvas.yview_scroll(-int(event.delta/60),"units"))
+
 class EditPlaylistFrame(ttk.Frame):
     def __init__(self, parent, data:Data) -> None:
         self.notebook:TabMenu = parent
@@ -464,6 +465,8 @@ class PlayerFrame(ttk.Frame):
         self.play_state = True
 
     def pause_song(self):
+        if self.player.current_song == None:
+            return
         self.play_state = not self.play_state
         if self.play_state:
             self.player.unpause_song()
@@ -473,14 +476,19 @@ class PlayerFrame(ttk.Frame):
     def check_updt_song(self):
         self.updt_song_time()
         if self.player.current_song == None:
-            self.playlist_name_label["text"] = self.change_label_text(self.player.current_playlist)
-            self.song_title_label["text"] = self.change_label_text("None")
-            self.song_artist_label["text"] = self.change_label_text("None")
+            if self.player.check_change():
+                self.play_state = True
+            else:
+                self.playlist_name_label["text"] = self.change_label_text(self.player.current_playlist)
+                self.song_title_label["text"] = self.change_label_text("None")
+                self.song_artist_label["text"] = self.change_label_text("None")
             self.after(50, self.check_updt_song)
             return
         if self.player.current_song.time > self.player.current_song.length:
             self.play_state = True
             self.player.next_song()
+        if not self.player.current_song.pause_state:
+            self.play_state = True
         self.play_button["image"] = self.pause_img if self.play_state else self.play_img
         self.playlist_name_label["text"] = self.change_label_text(self.player.current_playlist)
         self.song_title_label["text"] = self.change_label_text(self.player.current_song.name)
@@ -498,6 +506,9 @@ class PlayerFrame(ttk.Frame):
             return
         self.player.current_song.updt_time()
         self.song_progress["value"] = self.player.current_song.time/self.player.current_song.length
-        
-app = App(r"C:\Users\aisha\garbage\music_player-1\assets", "E")
-app.mainloop()
+
+if __name__ == "__main__":        
+    app = App(r"C:\Users\aisha\garbage\music_player-1\assets", "E")
+    app.mainloop()
+    if not app.data.save():
+        print("Something went wrong saving to file")
