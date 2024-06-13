@@ -65,7 +65,14 @@ class Data:
                     print("Broken Artist", file)
                     exit()
         for playlist in self.playlists.keys():
-            pass
+            for song in self.get_playlist_songs(playlist):
+                if not os.path.exists(fr"{self.directory}\{song}.mp3"):
+                    print(f"Invalid song name {song} in {playlist}")
+                    exit()
+        for song in self.artists.keys():
+            if not os.path.exists(fr"{self.directory}\{song}.mp3"):
+                    print(f"Invalid song name {song}")
+                    exit()
 
     def get_songs(self) -> list:
         """Gets all songs from the Artists dict, which are the valid songs, accessible by the music player"""

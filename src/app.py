@@ -20,8 +20,8 @@ class App(tk.Tk):
         self.geometry(f"600x700")
         self.resizable(False, False)
 
-        self.data = Data(r"C:\Users\aisha\garbage\music_player-1\music")
-        self.player = Player(r"C:\Users\aisha\garbage\music_player-1\music", self.data)
+        self.data = Data(data_dir)
+        self.player = Player(data_dir, self.data)
 
         self.data.add_new_playlist("random")
         print(type(self.data.get_playlist_songs("Something")))
@@ -30,8 +30,8 @@ class App(tk.Tk):
         self.player.play_song()
 
         s = ttk.Style()
-        s.configure("first.TFrame", background = "blue")
-        s.configure("second.TFrame", background = "red")
+        s.configure("first.TFrame", background = "#66669a")
+        s.configure("music_player.TFrame", background = "#777B7E")
         s.configure("child_frames.TFrame", highlightbackground="blue", highlightthickness=1,width=600, height=100, bd= 0)
         s.configure("noFocus.TButton", relief="flat", background="SystemButtonFace", borderwidth=0)
         self.container = ttk.Frame(self, height=600, width=600, style="first.TFrame")
@@ -169,7 +169,7 @@ class ScollDownloadPlaylists(ttk.Frame):
         self.playlist_num = len(self.playlists)
         self.playlist_height = self.playlist_num * 15
 
-        self.canvas = tk.Canvas(self, background="red", scrollregion=(0, 0, 600, self.playlist_height))
+        self.canvas = tk.Canvas(self, background="#aaa7cc", scrollregion=(0, 0, 600, self.playlist_height))
         self.canvas.pack(expand=True, fill="both")
 
         self.check_boxes = list()
@@ -412,24 +412,24 @@ class AddPlaylistFrame(ttk.Frame):
 class PlayerFrame(ttk.Frame):
     def __init__(self, parent, assets_dir:str, player:Player):
         self.player = player
-        ttk.Frame.__init__(self, parent, height=100, width=600, style="second.TFrame")
+        ttk.Frame.__init__(self, parent, height=100, width=600, style="music_player.TFrame")
         self.pack(fill = "both", expand=True)
         self.columnconfigure([x for x in range(20)], weight=1, uniform="a")
         self.rowconfigure([x for x in range(5)], weight=1, uniform="b")
 
         ttk.Scale(self, command=lambda value: self.player.set_vol(1 - float(value)), orient="vertical").grid(column=19, row=0, rowspan=4, sticky="ns")
         img = open_img(None, fr"{assets_dir}\sound_icon.png")
-        sound_label = ttk.Label(self, image=img, anchor="center", background="red")
+        sound_label = ttk.Label(self, image=img, anchor="center", background="#777B7E")
         sound_label.grid_propagate(False)
         sound_label.image = img
         sound_label.grid(column=19, row=4, sticky="nsew")
 
-        self.song_info_frame = ttk.Frame(self, style="first.TFrame")
+        self.song_info_frame = ttk.Frame(self, style="music_player.TFrame")
         self.song_info_frame.pack_propagate(False)
         self.song_info_frame.grid(column=0, row=3, columnspan=19, rowspan=2, sticky="nesw")
-        self.song_title_label = ttk.Label(self.song_info_frame, text = self.change_label_text("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb"))
+        self.song_title_label = ttk.Label(self.song_info_frame, text = self.change_label_text(""))
         self.song_title_label.pack()
-        self.song_artist_label = ttk.Label(self.song_info_frame, text = "eeeeeeeee")
+        self.song_artist_label = ttk.Label(self.song_info_frame, text = "")
         self.song_artist_label.pack()
 
         self.playlist_name_label = ttk.Label(self, text="")
@@ -506,9 +506,3 @@ class PlayerFrame(ttk.Frame):
             return
         self.player.current_song.updt_time()
         self.song_progress["value"] = self.player.current_song.time/self.player.current_song.length
-
-if __name__ == "__main__":        
-    app = App(r"C:\Users\aisha\garbage\music_player-1\assets", "E")
-    app.mainloop()
-    if not app.data.save():
-        print("Something went wrong saving to file")
