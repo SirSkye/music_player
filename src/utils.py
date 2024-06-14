@@ -4,7 +4,11 @@ import moviepy.editor as mp
 import os
 from PIL import ImageTk, Image, ImageOps
 
-def open_img(size: tuple, img_path: str):
+#Returns tkinter ready image
+#Pre: img_path must be valid
+#Post: Returns tkinter image
+#Param: size: tuple of width and height of img, img_path: str of path to img
+def open_img(size: tuple, img_path: str) -> ImageTk:
     img = Image.open(img_path)
     if size is not None:
         # Get the dimensions of the image and the button

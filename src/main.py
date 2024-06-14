@@ -1,3 +1,7 @@
+#Music Player called groovebox for my final culminating
+#Name: Aisha n
+#Date 6/11/2024
+#Ver 1.0
 from app import App
 
 if __name__ == "__main__":
